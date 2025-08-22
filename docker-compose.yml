@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tourmate-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: tourmate
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: tourmate
+      MYSQL_PASSWORD: tourmate123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: tourmate-app
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/tourmate?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: tourmate
+      SPRING_DATASOURCE_PASSWORD: tourmate123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql_data:
